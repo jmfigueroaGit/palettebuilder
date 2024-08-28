@@ -1,6 +1,9 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+
 import chroma from 'chroma-js';
 
 interface ColorInputProps {
@@ -446,7 +449,7 @@ export default function ColorInput({ onColorChange }: ColorInputProps) {
 				Enter a color (hex, RGB, HSL, or color name):
 			</label>
 			<div className='mt-1 flex rounded-md shadow-sm'>
-				<input
+				<Input
 					ref={inputRef}
 					type='text'
 					name='colorInput'
@@ -458,12 +461,12 @@ export default function ColorInput({ onColorChange }: ColorInputProps) {
 					onChange={handleInputChange}
 					onBlur={handleBlur}
 				/>
-				<button
+				<Button
 					onClick={generateRandomColor}
 					className='inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm hover:bg-gray-100'
 				>
 					Random
-				</button>
+				</Button>
 			</div>
 			{showSuggestions && (
 				<ul className='absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm'>

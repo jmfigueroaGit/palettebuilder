@@ -12,6 +12,7 @@ import {
 import { Camera, ArrowRight } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Button } from './ui/button';
 
 const ColorTooltip = ({ children, colors }: { children: any; colors: any }) => {
 	return (
@@ -182,7 +183,7 @@ const SampleComponents = ({ baseColor }: { baseColor: any }) => {
 										Middle: middleShade,
 									}}
 								>
-									<button
+									<Button
 										className={`px-4 py-2 rounded ${index === 3 ? 'opacity-50 cursor-not-allowed' : ''} ${
 											style === 'Outline' ? 'border' : ''
 										} ${style === 'Bezel' ? 'shadow-md' : ''}`}
@@ -209,7 +210,7 @@ const SampleComponents = ({ baseColor }: { baseColor: any }) => {
 										disabled={index === 3}
 									>
 										{label}
-									</button>
+									</Button>
 								</ColorTooltip>
 							))}
 						</div>
