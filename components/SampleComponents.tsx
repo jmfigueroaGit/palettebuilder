@@ -230,7 +230,7 @@ const SampleComponents = ({ baseColor }: { baseColor: any }) => {
 						<Camera className='h-4 w-4' />
 						<AlertTitle className='text-base sm:text-lg'>Make sure you save your custom color scale.</AlertTitle>
 						<AlertDescription className='text-sm sm:text-base'>
-							Your color scale will be lost if you don't save it before leaving the page.
+							Your color scale will be lost if you don&apos;t save it before leaving the page.
 						</AlertDescription>
 					</Alert>
 				</ColorTooltip>
