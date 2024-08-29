@@ -48,7 +48,14 @@ export default function Home() {
 	return (
 		<main className='container mx-auto p-4'>
 			<div className='mb-8'>
-				<h1 className='text-3xl font-bold mb-2'>{colorName}</h1>
+				<h1
+					className='text-3xl font-bold mb-2'
+					style={{
+						color: generateColorScale(baseColor)[800],
+					}}
+				>
+					{colorName.charAt(0).toUpperCase() + colorName.slice(1)}
+				</h1>
 				<ColorInput onColorChange={handleColorChange} />
 			</div>
 			{isValidColor && (
