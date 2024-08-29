@@ -10,8 +10,10 @@ const fontSans = FontSans({
 });
 
 export const metadata: Metadata = {
-	title: 'HueForge',
+	title: 'Palette Generator',
 	description: 'Color palette generator and theme builder for Tailwind CSS and React applications with TypeScript.',
+	keywords:
+		'color, palette, generator, theme, builder, tailwind, css, react, typescript, hueforge, chroma-js, nextjs, next.js, vercel, zeit, zeit.co, now.sh, now, font, inter, google, fonts, latin',
 };
 
 export default function RootLayout({
