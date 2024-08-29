@@ -19,6 +19,30 @@ export default function ColorInput({ onColorChange }: ColorInputProps) {
 	const [showSuggestions, setShowSuggestions] = useState(false);
 	const inputRef = useRef<HTMLInputElement>(null);
 
+	const parseColorInput = (input: string): string | null => {
+		input = input.trim().toLowerCase();
+
+		// Check if it's a valid hex, rgb, or hsl color
+		if (chroma.valid(input)) {
+			return chroma(input).hex();
+		}
+
+		// Check for RGB format
+		const rgbMatch = input.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+		if (rgbMatch) {
+			return chroma(rgbMatch.slice(1).map(Number)).hex();
+		}
+
+		// Check for HSL format
+		const hslMatch = input.match(/^hsl\((\d+),\s*(\d+)%?,\s*(\d+)%?\)$/);
+		if (hslMatch) {
+			const [h, s, l] = hslMatch.slice(1).map(Number);
+			return chroma.hsl(h, s / 100, l / 100).hex();
+		}
+
+		return null;
+	};
+
 	const findClosestNamedColor = (inputHex: string) => {
 		let closestColor = '';
 		let closestDistance = Infinity;
@@ -41,14 +65,14 @@ export default function ColorInput({ onColorChange }: ColorInputProps) {
 	};
 
 	const validateColor = (input: string) => {
-		try {
-			const color = chroma(input);
+		const parsedColor = parseColorInput(input);
+		if (parsedColor) {
 			setError('');
-			const { name, palette } = findClosestNamedColor(color.hex());
+			const { name, palette } = findClosestNamedColor(parsedColor);
 			setColorName(name);
-			onColorChange(color.hex(), name, palette);
-		} catch (e) {
-			setError('Invalid color input. Please enter a valid hex code or color name.');
+			onColorChange(parsedColor, name, palette);
+		} else {
+			setError('Invalid color input. Please enter a valid hex, RGB, or HSL color.');
 			setColorName('');
 		}
 	};
