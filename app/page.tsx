@@ -60,7 +60,12 @@ export default function Home() {
 			</div>
 			{isValidColor && (
 				<>
-					<ColorPalette baseColor={baseColor} />
+					<ColorPalette
+						baseColor={baseColor}
+						colorName={colorName}
+						colorScale={colorScale}
+						onUpdateColorScale={(newColorScale: any) => setColorScale(newColorScale)}
+					/>
 					<SampleComponents baseColor={baseColor} colorScale={colorScale} />
 				</>
 			)}

@@ -1,60 +1,60 @@
-'use client';
-
-import { useState } from 'react';
+import React, { useState } from 'react';
 import chroma from 'chroma-js';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import ContrastGrid from './ContrastGrid';
+import ExportPalette from './ExportPalette';
+import EditPalette from './EditPalette';
+import SavePalette from './SavePalette';
 
 interface ColorPaletteProps {
 	baseColor: string;
+	colorName: string;
+	colorScale: { [key: number]: string };
+	onUpdateColorScale: (newColorScale: { [key: number]: string }) => void;
 }
 
-const ColorPalette: React.FC<ColorPaletteProps> = ({ baseColor }) => {
+const ColorPalette: React.FC<ColorPaletteProps> = ({ baseColor, colorName, colorScale, onUpdateColorScale }) => {
 	const [copiedColor, setCopiedColor] = useState<string | null>(null);
+	const [showContrastGrid, setShowContrastGrid] = useState(false);
+	const [showExport, setShowExport] = useState(false);
+	const [showEdit, setShowEdit] = useState(false);
+	const [showSave, setShowSave] = useState(false);
 
-	const generateColorScale = (color: string) => {
-		try {
-			const baseChroma = chroma(color);
-			return [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].map((level) => {
-				const scaledColor =
-					level === 500
-						? baseChroma
-						: level < 500
-						? chroma.mix('white', baseChroma, level / 500)
-						: chroma.mix(baseChroma, 'black', (level - 500) / 500);
-				return {
-					level,
-					hex: scaledColor.hex().toUpperCase(),
-				};
-			});
-		} catch (error) {
-			console.error('Invalid color input:', error);
-			return [];
-		}
+	const getContrastColor = (bgColor: string) => {
+		return chroma(bgColor).luminance() > 0.5 ? colorScale[900] : colorScale[50];
 	};
-
-	const colorScale = generateColorScale(baseColor);
 
 	const copyToClipboard = (color: string) => {
 		navigator.clipboard.writeText(color).then(() => {
 			setCopiedColor(color);
-			setTimeout(() => setCopiedColor(null), 2000); // Reset after 2 seconds
+			setTimeout(() => setCopiedColor(null), 2000);
 		});
 	};
 
 	return (
 		<div className='mb-4 sm:mb-6 md:mb-8'>
 			<div className='flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 sm:mb-4'>
-				<h2 className='text-xl sm:text-2xl font-semibold mb-2 sm:mb-0'>Color Palette</h2>
-				<div className='flex flex-wrap gap-2 text-xs sm:text-sm text-gray-500'>
-					<span className='cursor-pointer hover:text-gray-700'>Contrast grid</span>
-					<span className='cursor-pointer hover:text-gray-700'>Export</span>
-					<span className='cursor-pointer hover:text-gray-700'>Edit</span>
-					<span className='cursor-pointer hover:text-gray-700'>Save</span>
+				<h2 className='text-xl sm:text-2xl font-semibold mb-2 sm:mb-0'>{colorName} Color Palette</h2>
+				<div className='flex flex-wrap gap-2 text-xs sm:text-sm'>
+					<Button variant='outline' size='sm' onClick={() => setShowContrastGrid(true)}>
+						Contrast grid
+					</Button>
+					<Button variant='outline' size='sm' onClick={() => setShowExport(true)}>
+						Export
+					</Button>
+					<Button variant='outline' size='sm' onClick={() => setShowEdit(true)}>
+						Edit
+					</Button>
+					<Button variant='outline' size='sm' onClick={() => setShowSave(true)}>
+						Save
+					</Button>
 				</div>
 			</div>
 			<div className='grid grid-cols-5 sm:grid-cols-6 md:grid-cols-11 gap-1 sm:gap-2'>
-				{colorScale.map(({ level, hex }) => (
-					<TooltipProvider key={level.toString()}>
+				{Object.entries(colorScale).map(([level, hex]) => (
+					<TooltipProvider key={level}>
 						<Tooltip>
 							<TooltipTrigger asChild>
 								<button
@@ -63,10 +63,15 @@ const ColorPalette: React.FC<ColorPaletteProps> = ({ baseColor }) => {
 									style={{ backgroundColor: hex }}
 								>
 									<div className='absolute inset-0 flex flex-col justify-between p-1 sm:p-2 text-[8px] sm:text-xs'>
-										<span className={chroma(hex).luminance() > 0.5 ? 'text-gray-800' : 'text-white'}>{level}</span>
-										<span className={chroma(hex).luminance() > 0.5 ? 'text-gray-800' : 'text-white'}>
-											{hex.slice(1)}
+										<span style={{ color: getContrastColor(hex) }}>
+											{level}
+											{level === '500' && (
+												<span className='ml-1 px-1 py-0.5 bg-white bg-opacity-30 rounded text-[6px] sm:text-[8px]'>
+													Base
+												</span>
+											)}
 										</span>
+										<span style={{ color: getContrastColor(hex) }}>{hex.toUpperCase()}</span>
 									</div>
 									{copiedColor === hex && (
 										<div className='absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-xs sm:text-sm'>
@@ -82,6 +87,38 @@ const ColorPalette: React.FC<ColorPaletteProps> = ({ baseColor }) => {
 					</TooltipProvider>
 				))}
 			</div>
+			<Dialog open={showContrastGrid} onOpenChange={setShowContrastGrid}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Contrast Grid</DialogTitle>
+					</DialogHeader>
+					<ContrastGrid colorScale={colorScale} onClose={() => setShowContrastGrid(false)} />
+				</DialogContent>
+			</Dialog>
+			<Dialog open={showExport} onOpenChange={setShowExport}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Export Palette</DialogTitle>
+					</DialogHeader>
+					<ExportPalette colorScale={colorScale} colorName={colorName} onClose={() => setShowExport(false)} />
+				</DialogContent>
+			</Dialog>
+			<Dialog open={showEdit} onOpenChange={setShowEdit}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Edit Palette</DialogTitle>
+					</DialogHeader>
+					<EditPalette colorScale={colorScale} onUpdateColorScale={onUpdateColorScale} />
+				</DialogContent>
+			</Dialog>
+			<Dialog open={showSave} onOpenChange={setShowSave}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Save Palette</DialogTitle>
+					</DialogHeader>
+					<SavePalette colorScale={colorScale} colorName={colorName} />
+				</DialogContent>
+			</Dialog>
 		</div>
 	);
 };
