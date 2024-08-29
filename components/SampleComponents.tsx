@@ -36,7 +36,7 @@ const ColorTooltip = ({ children, colors }: { children: any; colors: any }) => {
 	);
 };
 
-const SampleComponents = ({ baseColor }: { baseColor: any }) => {
+const SampleComponents = ({ baseColor, colorScale }: { baseColor: any; colorScale: any }) => {
 	const getContrastColor = (bgColor: any) => {
 		return chroma(bgColor).luminance() > 0.5 ? '#000000' : '#ffffff';
 	};
@@ -56,7 +56,9 @@ const SampleComponents = ({ baseColor }: { baseColor: any }) => {
 
 	return (
 		<div className='space-y-4 sm:space-y-6 md:space-y-8'>
-			<h2 className='text-xl sm:text-2xl font-bold mb-2 sm:mb-4'>Sample Components</h2>
+			<h2 className='text-xl sm:text-2xl font-bold mb-2 sm:mb-4' style={{ color: colorScale[700] }}>
+				Sample Components
+			</h2>
 
 			{/* Cards Row */}
 			<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
@@ -83,14 +85,18 @@ const SampleComponents = ({ baseColor }: { baseColor: any }) => {
 				{/* Chart Card */}
 				<ColorTooltip colors={{ Base: baseColor }}>
 					<div className='rounded-lg overflow-hidden shadow-lg bg-white p-4'>
-						<h3 className='text-lg sm:text-xl font-semibold mb-2'>Revenue</h3>
-						<p className='text-2xl sm:text-3xl font-bold mb-4'>$12,543</p>
+						<h3 className='text-lg sm:text-xl font-semibold mb-2' style={{ color: colorScale[700] }}>
+							Revenue
+						</h3>
+						<p className='text-2xl sm:text-3xl font-bold mb-4' style={{ color: colorScale[900] }}>
+							$12,543
+						</p>
 						<div className='h-40 sm:h-48 md:h-56'>
 							<ResponsiveContainer width='100%' height='100%'>
 								<LineChart data={chartData}>
-									<CartesianGrid strokeDasharray='3 3' />
-									<XAxis dataKey='name' tick={{ fontSize: 12 }} />
-									<YAxis tick={{ fontSize: 12 }} />
+									<CartesianGrid strokeDasharray='3 3' stroke={colorScale[200]} />
+									<XAxis dataKey='name' tick={{ fill: colorScale[700] }} />
+									<YAxis tick={{ fill: colorScale[700] }} />
 									<RechartsTooltip />
 									<Line type='monotone' dataKey='value' stroke={baseColor} strokeWidth={2} />
 								</LineChart>
@@ -102,14 +108,14 @@ const SampleComponents = ({ baseColor }: { baseColor: any }) => {
 				{/* Task Card */}
 				<ColorTooltip colors={{ Light: lightShade }}>
 					<div className='rounded-lg overflow-hidden shadow-lg bg-white p-4'>
-						<h3 className='text-lg sm:text-xl font-semibold mb-4'>Today</h3>
+						<h3 className='text-lg sm:text-xl font-semibold mb-4' style={{ color: colorScale[700] }}>
+							Today
+						</h3>
 						<div className='space-y-2'>
 							{['Design system meeting', 'Lunch', 'Design review'].map((task, index) => (
 								<div key={index} className='p-2 rounded' style={{ backgroundColor: lightShade }}>
-									<p className='text-sm sm:text-base' style={{ color: getContrastColor(lightShade) }}>
-										{task}
-									</p>
-									<p className='text-xs sm:text-sm' style={{ color: getContrastColor(lightShade) }}>
+									<p style={{ color: getContrastColor(lightShade) }}>{task}</p>
+									<p className='text-sm' style={{ color: getContrastColor(lightShade) }}>
 										{index === 0 ? '9 - 10 AM' : index === 1 ? '1 - 2 PM' : '3 - 4 PM'}
 									</p>
 								</div>
@@ -130,8 +136,12 @@ const SampleComponents = ({ baseColor }: { baseColor: any }) => {
 							style={{ background: `linear-gradient(to top, ${chroma(baseColor).alpha(0.8)}, transparent)` }}
 						>
 							<Camera className='text-white mb-2' size={20} />
-							<h3 className='text-lg sm:text-xl font-bold text-white'>Create</h3>
-							<p className='text-base sm:text-lg text-white'>color scales in seconds.</p>
+							<h3 className='text-xl font-bold' style={{ color: getContrastColor(baseColor) }}>
+								Create
+							</h3>
+							<p className='text-lg' style={{ color: getContrastColor(baseColor) }}>
+								color scales in seconds.
+							</p>
 						</div>
 					</div>
 				</ColorTooltip>
@@ -173,11 +183,15 @@ const SampleComponents = ({ baseColor }: { baseColor: any }) => {
 
 			{/* Buttons Row */}
 			<div className='space-y-4'>
-				<h3 className='text-lg sm:text-xl font-semibold'>Buttons</h3>
-				{['Flat', 'Outline', 'Bezel'].map((style, styleIndex) => (
-					<div key={style}>
-						<h4 className='text-base sm:text-lg mb-2'>{style}</h4>
-						<div className='flex flex-wrap gap-2'>
+				<h3 className='text-xl font-semibold' style={{ color: colorScale[700] }}>
+					Buttons
+				</h3>
+				<div className='space-y-2'>
+					<div>
+						<h4 className='text-lg mb-2' style={{ color: colorScale[600] }}>
+							Flat
+						</h4>
+						<div className='space-x-2'>
 							{['Default', 'Hover', 'Active', 'Disabled'].map((label, index) => (
 								<ColorTooltip
 									key={index}
@@ -185,31 +199,15 @@ const SampleComponents = ({ baseColor }: { baseColor: any }) => {
 										Base: baseColor,
 										Dark: darkShade,
 										Middle: middleShade,
+										Disabled: chroma(baseColor).alpha(0.5).css(),
 									}}
 								>
 									<Button
-										className={`px-3 py-1 sm:px-4 sm:py-2 text-sm sm:text-base rounded ${
-											index === 3 ? 'opacity-50 cursor-not-allowed' : ''
-										} ${style === 'Outline' ? 'border' : ''} ${style === 'Bezel' ? 'shadow-md' : ''}`}
+										key={index}
+										className={`px-4 py-2 rounded ${index === 3 ? 'opacity-50 cursor-not-allowed' : ''}`}
 										style={{
-											backgroundColor:
-												style === 'Outline'
-													? index === 1 || index === 2
-														? baseColor
-														: 'transparent'
-													: index === 1
-													? darkShade
-													: index === 2
-													? middleShade
-													: baseColor,
-											color:
-												style === 'Outline'
-													? index === 1 || index === 2
-														? getContrastColor(baseColor)
-														: baseColor
-													: getContrastColor(index === 1 ? darkShade : index === 2 ? middleShade : baseColor),
-											borderColor: style === 'Outline' ? baseColor : undefined,
-											boxShadow: style === 'Bezel' ? `0 2px 4px ${chroma(baseColor).alpha(0.5).hex()}` : undefined,
+											backgroundColor: index === 1 ? darkShade : index === 2 ? middleShade : baseColor,
+											color: getContrastColor(index === 1 ? darkShade : index === 2 ? middleShade : baseColor),
 										}}
 										disabled={index === 3}
 									>
@@ -219,17 +217,81 @@ const SampleComponents = ({ baseColor }: { baseColor: any }) => {
 							))}
 						</div>
 					</div>
-				))}
+					<div>
+						<h4 className='text-lg mb-2' style={{ color: colorScale[600] }}>
+							Outline
+						</h4>
+						<div className='space-x-2'>
+							{['Default', 'Hover', 'Active', 'Disabled'].map((label, index) => (
+								<ColorTooltip
+									key={index}
+									colors={{
+										Base: baseColor,
+										Dark: darkShade,
+										Middle: middleShade,
+										Disabled: chroma(baseColor).alpha(0.5).css(),
+									}}
+								>
+									<Button
+										key={index}
+										className={`px-4 py-2 rounded border ${index === 3 ? 'opacity-50 cursor-not-allowed' : ''}`}
+										style={{
+											borderColor: baseColor,
+											color: index === 1 || index === 2 ? getContrastColor(baseColor) : baseColor,
+											backgroundColor: index === 1 || index === 2 ? baseColor : 'transparent',
+										}}
+										disabled={index === 3}
+									>
+										{label}
+									</Button>
+								</ColorTooltip>
+							))}
+						</div>
+					</div>
+					<div>
+						<h4 className='text-lg mb-2' style={{ color: colorScale[600] }}>
+							Bezel
+						</h4>
+						<div className='space-x-2'>
+							{['Default', 'Hover', 'Active', 'Disabled'].map((label, index) => (
+								<ColorTooltip
+									key={index}
+									colors={{
+										Base: baseColor,
+										Dark: darkShade,
+										Middle: middleShade,
+										Disabled: chroma(baseColor).alpha(0.5).css(),
+									}}
+								>
+									<Button
+										key={index}
+										className={`px-4 py-2 rounded shadow-md ${index === 3 ? 'opacity-50 cursor-not-allowed' : ''}`}
+										style={{
+											backgroundColor: index === 1 ? darkShade : index === 2 ? middleShade : baseColor,
+											color: getContrastColor(index === 1 ? darkShade : index === 2 ? middleShade : baseColor),
+											boxShadow: `0 2px 4px ${chroma(baseColor).alpha(0.5).hex()}`,
+										}}
+										disabled={index === 3}
+									>
+										{label}
+									</Button>
+								</ColorTooltip>
+							))}
+						</div>
+					</div>
+				</div>
 			</div>
 
 			{/* Alerts */}
 			<div className='space-y-4'>
-				<h3 className='text-lg sm:text-xl font-semibold'>Alerts</h3>
+				<h3 className='text-xl font-semibold' style={{ color: colorScale[700] }}>
+					Alerts
+				</h3>
 				<ColorTooltip colors={{ Light: lightShade }}>
 					<Alert style={{ backgroundColor: lightShade, color: getContrastColor(lightShade) }}>
 						<Camera className='h-4 w-4' />
-						<AlertTitle className='text-base sm:text-lg'>Make sure you save your custom color scale.</AlertTitle>
-						<AlertDescription className='text-sm sm:text-base'>
+						<AlertTitle>Make sure you save your custom color scale.</AlertTitle>
+						<AlertDescription>
 							Your color scale will be lost if you don&apos;t save it before leaving the page.
 						</AlertDescription>
 					</Alert>

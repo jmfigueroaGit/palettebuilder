@@ -8,7 +8,7 @@ import { colorNames, colorPalettes } from '@/lib/colors';
 import chroma from 'chroma-js';
 
 interface ColorInputProps {
-	onColorChange: (color: string, colorName: string) => void;
+	onColorChange: (color: string, colorName: string, pallete: any) => void;
 }
 
 export default function ColorInput({ onColorChange }: ColorInputProps) {
@@ -37,16 +37,16 @@ export default function ColorInput({ onColorChange }: ColorInputProps) {
 			});
 		});
 
-		return `${closestPalette} ${closestShade}`;
+		return { name: `${closestPalette} ${closestShade}`, palette: colorPalettes[closestPalette] };
 	};
 
 	const validateColor = (input: string) => {
 		try {
 			const color = chroma(input);
 			setError('');
-			const mappedColorName = findClosestNamedColor(color.hex());
-			setColorName(mappedColorName);
-			onColorChange(color.hex(), mappedColorName);
+			const { name, palette } = findClosestNamedColor(color.hex());
+			setColorName(name);
+			onColorChange(color.hex(), name, palette);
 		} catch (e) {
 			setError('Invalid color input. Please enter a valid hex code or color name.');
 			setColorName('');
@@ -55,7 +55,7 @@ export default function ColorInput({ onColorChange }: ColorInputProps) {
 
 	useEffect(() => {
 		validateColor(inputColor);
-	}, [inputColor, onColorChange]);
+	}, [inputColor]);
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
