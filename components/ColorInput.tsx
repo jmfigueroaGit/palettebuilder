@@ -25,8 +25,6 @@ export default function ColorInput({ onColorChange }: ColorInputProps) {
 		let closestPalette = '';
 		let closestShade = 0;
 
-		const inputLab = chroma(inputHex).lab();
-
 		Object.entries(colorPalettes).forEach(([paletteName, palette]) => {
 			Object.entries(palette).forEach(([shade, hexValue]) => {
 				const distance = chroma.distance(inputHex, hexValue, 'lab');
