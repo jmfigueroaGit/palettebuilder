@@ -22,7 +22,7 @@ async function generateAccessToken() {
 }
 
 export async function POST(req: NextRequest) {
-	const { orderID, clerkUserId } = await req.json();
+	const { orderID, email } = await req.json();
 
 	try {
 		const accessToken = await generateAccessToken();
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
 
 		if (response.status === 201) {
 			// Payment successful
-			const user = await db.select().from(users).where(eq(users.clerkId, clerkUserId)).limit(1);
+			const user = await db.select().from(users).where(eq(users.email, email)).limit(1);
 			const amount = data.purchase_units[0].payments.captures[0].amount.value;
 			const subscriptionTier = amount === '5.00' ? 'monthly' : 'yearly';
 

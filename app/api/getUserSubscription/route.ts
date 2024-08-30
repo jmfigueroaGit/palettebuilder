@@ -5,11 +5,11 @@ import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 
-export async function GET(request: NextRequest) {
-	const clerkUserId = request.nextUrl.searchParams.get('clerkUserId');
+export async function POST(request: NextRequest) {
+	const { email } = await request.json();
 
-	if (!clerkUserId) {
-		return NextResponse.json({ error: 'Clerk User ID is required' }, { status: 400 });
+	if (!email) {
+		return NextResponse.json({ error: 'Email is required' }, { status: 400 });
 	}
 
 	try {
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
 				paypalSubscriptionId: users.paypalSubscriptionId,
 			})
 			.from(users)
-			.where(eq(users.clerkId, clerkUserId))
+			.where(eq(users.email, email))
 			.limit(1);
 
 		if (user.length === 0) {

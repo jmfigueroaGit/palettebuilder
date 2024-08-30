@@ -6,15 +6,15 @@ import { colorPalettes, users } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 
 export async function POST(request: NextRequest) {
-	const { clerkId, name, primaryColor, secondaryColor, colorScale } = await request.json();
+	const { email, name, primaryColor, secondaryColor, colorScale } = await request.json();
 
-	if (!clerkId || !name || !primaryColor || !colorScale) {
+	if (!email || !name || !primaryColor || !colorScale) {
 		return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
 	}
 
 	try {
 		// Find the user by Clerk ID
-		const userResult = await db.select().from(users).where(eq(users.clerkId, clerkId)).limit(1);
+		const userResult = await db.select().from(users).where(eq(users.email, email)).limit(1);
 
 		if (userResult.length === 0) {
 			return NextResponse.json({ error: 'User not found' }, { status: 404 });

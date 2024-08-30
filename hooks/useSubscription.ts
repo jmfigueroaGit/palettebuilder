@@ -11,21 +11,29 @@ export function useSubscription() {
 
 	useEffect(() => {
 		if (user) {
-			fetch(`/api/getUserSubscription?clerkUserId=${user.id}`)
-				.then((response) => response.json())
-				.then((data) => {
-					if (data.error) {
-						console.error('Error fetching subscription:', data.error);
-					} else {
-						setSubscriptionTier(data.subscriptionTier);
-						setSubscriptionStatus(data.subscriptionStatus);
-					}
-					setIsLoading(false);
-				})
-				.catch((error) => {
+			const fetchSubscription = async () => {
+				try {
+					const response = await fetch('/api/getUserSubscription', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({
+							email: user.emailAddresses[0].emailAddress,
+						}),
+					});
+
+					const data = await response.json();
+					setSubscriptionTier(data.subscriptionTier);
+					setSubscriptionStatus(data.subscriptionStatus);
+				} catch (error) {
 					console.error('Error fetching subscription:', error);
-					setIsLoading(false);
-				});
+				}
+			};
+
+			fetchSubscription();
+
+			setIsLoading(false);
 		} else {
 			setIsLoading(false);
 		}

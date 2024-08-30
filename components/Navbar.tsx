@@ -21,7 +21,7 @@ export default function Navbar() {
 		if (isSignedIn && user) {
 			const saveUser = async () => {
 				try {
-					const response = await fetch('/api/saveUser', {
+					await fetch('/api/saveUser', {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
 						body: JSON.stringify({
@@ -29,9 +29,6 @@ export default function Navbar() {
 							email: user.primaryEmailAddress?.emailAddress,
 						}),
 					});
-					if (!response.ok) {
-						throw new Error('Failed to save user');
-					}
 				} catch (error) {
 					console.error('Error saving user:', error);
 				}

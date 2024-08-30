@@ -133,7 +133,6 @@ export default function ColorInput({ onColorChange, onSecondaryColorChange }: Co
 	};
 
 	const toggleSecondaryInput = () => {
-		console.log(isPremium);
 		if (isPremium) {
 			setShowSecondaryInput(!showSecondaryInput);
 			if (showSecondaryInput) {

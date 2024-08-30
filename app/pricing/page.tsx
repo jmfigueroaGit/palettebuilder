@@ -31,17 +31,27 @@ export default function PricingPage() {
 	const router = useRouter();
 
 	useEffect(() => {
-		if (isLoaded && !isSignedIn) {
-			router.push('/');
-		} else if (isLoaded && isSignedIn && user) {
-			// Fetch current subscription status
-			fetch(`/api/getUserSubscription?clerkUserId=${user.id}`)
-				.then((response) => response.json())
-				.then((data) => {
-					setCurrentPlan(data.subscriptionTier);
-				})
-				.catch((error) => console.error('Error fetching subscription:', error));
-		}
+		const fetchSubscription = async () => {
+			try {
+				const response = await fetch('/api/getUserSubscription', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						email: user?.emailAddresses[0]?.emailAddress,
+					}),
+				});
+
+				const data = await response.json();
+
+				setCurrentPlan(data.subscriptionTier);
+			} catch (error) {
+				console.error('Error fetching subscription:', error);
+			}
+		};
+
+		fetchSubscription();
 	}, [isLoaded, isSignedIn, user, router]);
 
 	const createOrder = async (plan: 'monthly' | 'yearly') => {
@@ -98,7 +108,7 @@ export default function PricingPage() {
 				},
 				body: JSON.stringify({
 					orderID: data.orderID,
-					clerkUserId: user.id,
+					email: user.emailAddresses[0].emailAddress,
 				}),
 			});
 			const orderData = await response.json();
@@ -108,7 +118,7 @@ export default function PricingPage() {
 					title: 'Payment successful',
 					description: `Your ${orderData.subscriptionTier} subscription has been activated.`,
 				});
-				router.push('/subscription-success');
+				router.push('/');
 			} else if (orderData.error === 'INSTRUMENT_DECLINED') {
 				toast({
 					variant: 'destructive',
@@ -151,7 +161,7 @@ export default function PricingPage() {
 			<div className='container mx-auto px-4 py-8'>
 				<h1 className='text-3xl font-bold mb-8'>Choose Your Plan</h1>
 				<p className='mb-4'>
-					Current Plan: <strong>{currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1)}</strong>
+					Current Plan: <strong>{currentPlan?.charAt(0).toUpperCase() + currentPlan?.slice(1)}</strong>
 				</p>
 				{scriptError && (
 					<div className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4' role='alert'>

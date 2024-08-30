@@ -89,7 +89,7 @@ const ColorPalette: React.FC<ColorPaletteProps> = ({
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
-					clerkId: user.id,
+					email: user.emailAddresses[0].emailAddress,
 					name: colorName,
 					primaryColor: baseColor,
 					secondaryColor,

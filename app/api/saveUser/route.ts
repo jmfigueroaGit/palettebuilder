@@ -15,6 +15,8 @@ export async function POST(request: NextRequest) {
 	try {
 		const existingUser = await db.select().from(users).where(eq(users.clerkId, clerkId)).limit(1);
 
+		console.log(existingUser);
+
 		if (existingUser.length > 0) {
 			return NextResponse.json(existingUser[0], { status: 200 });
 		}
